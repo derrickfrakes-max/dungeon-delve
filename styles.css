@@ -1,0 +1,155 @@
+:root{--gold:#c9a84c;--gold2:#e8c96a;--blood:#8b1a1a;--blood2:#c0392b;--bone:#d4c5a9;--bone2:#ede0c4;--shadow:#0d0b09;--common:#a0a0a0;--uncommon:#4ec94e;--rare:#4e7ec9;--legendary:#c94ec9;--blankslate:#e8e8ff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--shadow);color:var(--bone);font-family:'Crimson Text',serif;font-size:16px;min-height:100vh;overflow-x:hidden;background-image:radial-gradient(ellipse at 20% 50%,rgba(139,26,26,.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(201,168,76,.04) 0%,transparent 50%);}
+#app{max-width:920px;margin:0 auto;padding:10px;}
+.screen{display:none;}.screen.active{display:block;}
+#title-screen{text-align:center;padding:60px 20px;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;}
+#title-screen.active{display:flex;}
+#death-screen{text-align:center;padding:60px 20px;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;}
+#death-screen.active{display:flex;}
+.title-rune{font-size:64px;color:var(--gold);text-shadow:0 0 30px rgba(201,168,76,.5);animation:flicker 4s infinite;margin-bottom:10px;}
+@keyframes flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:.8;}94%{opacity:1;}96%{opacity:.9;}97%{opacity:1;}}
+h1.game-title{font-family:'Cinzel',serif;font-size:clamp(36px,8vw,70px);font-weight:900;color:var(--gold2);text-shadow:2px 2px 0 #000,0 0 40px rgba(201,168,76,.4);letter-spacing:8px;text-transform:uppercase;margin-bottom:8px;}
+.subtitle{font-style:italic;font-size:18px;color:var(--bone);opacity:.7;letter-spacing:3px;margin-bottom:50px;}
+.name-form{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.name-form input{background:rgba(255,255,255,.05);border:1px solid var(--gold);color:var(--bone2);font-family:'Crimson Text',serif;font-size:20px;padding:10px 20px;text-align:center;width:280px;outline:none;}
+.btn{background:linear-gradient(135deg,#3a2810,#1a1208);border:1px solid var(--gold);color:var(--gold2);font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;padding:12px 22px;cursor:pointer;text-transform:uppercase;transition:all .2s;position:relative;overflow:hidden;}
+.btn:hover{border-color:var(--gold2);box-shadow:0 0 20px rgba(201,168,76,.3);transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn.danger{border-color:var(--blood2);color:var(--blood2);}
+.btn.danger:hover{box-shadow:0 0 20px rgba(192,57,43,.3);}
+.btn.disabled,.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+.btn.void{border-color:var(--blankslate);color:var(--blankslate);}
+.floor-banner{text-align:center;font-family:'Cinzel',serif;font-size:20px;color:var(--gold);letter-spacing:4px;padding:14px;border-top:1px solid rgba(201,168,76,.3);border-bottom:1px solid rgba(201,168,76,.3);margin-bottom:18px;text-shadow:0 0 20px rgba(201,168,76,.3);}
+#graveyard-screen{padding:20px 10px;}#graveyard-screen.active{display:block;}
+.graveyard-container{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;min-height:180px;padding:20px;margin-bottom:16px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.05);position:relative;}
+.graveyard-empty{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-style:italic;color:rgba(255,255,255,.2);font-size:14px;white-space:nowrap;}
+.tombstone{display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .2s;position:relative;}
+.tombstone:hover{transform:translateY(-4px);}
+.tomb-svg{width:80px;height:100px;}
+.tomb-name{font-family:'Cinzel',serif;font-size:9px;color:var(--bone);text-align:center;max-width:80px;margin-top:2px;opacity:.8;}
+.tomb-depth{font-size:9px;color:var(--gold);opacity:.6;}
+.tomb-badge{position:absolute;top:-6px;right:-6px;background:var(--gold);color:#000;font-size:8px;font-family:'Cinzel',serif;padding:2px 4px;}
+.hud{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;background:rgba(0,0,0,.5);border:1px solid rgba(201,168,76,.2);margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.hud-section{display:flex;flex-direction:column;gap:2px;}
+.hud-label{font-size:10px;letter-spacing:2px;color:var(--gold);font-family:'Cinzel',serif;text-transform:uppercase;}
+.hud-value{font-size:18px;font-weight:600;color:var(--bone2);}
+.hp-bar{height:12px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);overflow:hidden;}
+.hp-fill{height:100%;background:linear-gradient(90deg,var(--blood),var(--blood2));transition:width .4s;}
+#initiative-banner{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;font-family:'Cinzel',serif;font-size:20px;letter-spacing:4px;padding:12px 24px;border:2px solid;animation:initFade 2.2s forwards;pointer-events:none;}
+@keyframes initFade{0%{opacity:0;transform:translate(-50%,-60%);}20%{opacity:1;transform:translate(-50%,-50%);}80%{opacity:1;}100%{opacity:0;transform:translate(-50%,-40%);}}
+#initiative-banner.enemy{color:var(--blood2);border-color:var(--blood2);background:rgba(100,10,10,.85);}
+#initiative-banner.player{color:var(--gold2);border-color:var(--gold);background:rgba(20,14,6,.9);}
+.arena{background:linear-gradient(180deg,#0f0d0a 0%,#1a1410 50%,#221a12 100%);border:1px solid rgba(201,168,76,.15);position:relative;overflow:hidden;min-height:340px;margin-bottom:8px;}
+.arena-floor{position:absolute;bottom:0;left:0;right:0;height:55px;background:linear-gradient(180deg,transparent,rgba(30,20,10,.8));border-top:1px solid rgba(201,168,76,.1);}
+.torch{position:absolute;top:15px;font-size:20px;animation:tFlame .5s infinite alternate;}
+.torch-left{left:16px;}.torch-right{right:16px;}
+@keyframes tFlame{from{text-shadow:0 0 10px orange,0 0 20px red;}to{text-shadow:0 0 20px orange,0 0 40px red;}}
+.player-char{position:absolute;bottom:-40px;left:10px;}
+.player-char.hit{animation:playerHit .3s;}
+@keyframes playerHit{0%,100%{transform:translateX(0);}50%{transform:translateX(14px);}}
+.enemies-area{position:absolute;right:25px;top:20px;bottom:55px;width:58%;display:flex;align-items:flex-end;justify-content:flex-end;gap:8px;}
+.enemy-slot{display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:all .2s;position:relative;}
+.enemy-slot:nth-child(1){margin-bottom:80px;}.enemy-slot:nth-child(2){margin-bottom:38px;}.enemy-slot:nth-child(3){margin-bottom:0;}
+.enemy-slot:hover .enemy-body svg{filter:brightness(1.4) drop-shadow(0 0 8px rgba(201,168,76,.6));}
+.enemy-slot.dead{opacity:.15;cursor:default;pointer-events:none;}
+.enemy-slot.selected .enemy-body svg{filter:brightness(1.5) drop-shadow(0 0 14px rgba(255,200,0,.9));}
+.enemy-slot.attacking{animation:enemyLunge .35s ease-in-out;}
+@keyframes enemyLunge{0%{transform:translateX(0);}40%{transform:translateX(-60px) scale(1.1);}100%{transform:translateX(0);}}
+.enemy-hp-bar{width:68px;height:5px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.1);overflow:hidden;margin-bottom:3px;}
+.enemy-hp-fill{height:100%;background:linear-gradient(90deg,#8b1a1a,#c0392b);transition:width .3s;}
+.enemy-name-tag{font-family:'Cinzel',serif;font-size:8px;color:var(--bone);text-align:center;opacity:.8;margin-bottom:2px;}
+.combat-log{background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.08);height:100px;overflow-y:auto;padding:7px 12px;margin-bottom:8px;font-size:13px;line-height:1.6;}
+.combat-log::-webkit-scrollbar{width:3px;}.combat-log::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);}
+.log-player{color:var(--gold2);}.log-enemy{color:#e88;}.log-system{color:var(--bone);font-style:italic;opacity:.7;}
+.log-loot{color:var(--uncommon);}.log-rare{color:var(--rare);}.log-legendary{color:var(--legendary);}
+.log-death{color:var(--blood2);font-weight:bold;}.log-floor{color:var(--gold);font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;}
+.log-perk{color:#f0c060;}.log-poison{color:#7ec97e;}.log-burn{color:#ff8844;}.log-blankslate{color:var(--blankslate);}
+.action-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:6px;}
+.pouch-bar{display:flex;align-items:center;gap:5px;padding:5px 0;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.07);}
+.pouch-label{font-family:'Cinzel',serif;font-size:9px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;margin-right:4px;}
+.pouch-slot{width:44px;height:44px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;position:relative;}
+.pouch-slot:hover{border-color:rgba(201,168,76,.6);background:rgba(201,168,76,.07);}
+.pouch-slot.filled{border-color:rgba(201,168,76,.35);}
+.pouch-slot.empty-slot{border-style:dashed;cursor:default;}
+.pouch-slot-label{font-size:7px;color:rgba(255,255,255,.3);margin-top:1px;}
+.action-bar .btn{flex:1;min-width:70px;font-size:11px;padding:11px 8px;}
+.bottom-panels{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.panel{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);padding:10px;}
+.panel-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid rgba(201,168,76,.2);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.stat-row{display:flex;justify-content:space-between;font-size:12px;padding:1px 0;}
+.stat-key{color:rgba(255,255,255,.5);}.stat-val{color:var(--bone2);font-weight:600;}
+.stat-debuff{color:#e88!important;}.stat-buff{color:#4ec94e!important;}
+.perks-list{margin-top:6px;}
+.perk-tag{display:inline-block;font-size:9px;padding:2px 6px;margin:2px;border:1px solid rgba(240,192,96,.4);color:#f0c060;}
+.equip-silhouette{position:relative;width:100%;display:flex;justify-content:center;}
+.equip-slot{position:absolute;width:36px;height:36px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.equip-slot:hover{border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.07);}
+.equip-slot.has-item{border-color:rgba(201,168,76,.4);}
+.equip-slot.rarity-uncommon{border-color:rgba(78,201,78,.5);}
+.equip-slot.rarity-rare{border-color:rgba(78,126,201,.6);}
+.equip-slot.rarity-legendary{border-color:rgba(201,78,201,.7);box-shadow:0 0 6px rgba(201,78,201,.3);}
+.equip-slot.rarity-blankslate{border-color:var(--blankslate);box-shadow:0 0 10px rgba(232,232,255,.4);animation:bsGlow 2s infinite alternate;}
+@keyframes bsGlow{from{box-shadow:0 0 6px rgba(232,232,255,.3);}to{box-shadow:0 0 16px rgba(232,232,255,.7);}}
+@keyframes magicGlow{from{box-shadow:0 0 6px rgba(58,106,207,.4);}to{box-shadow:0 0 18px rgba(58,106,207,.9);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.equip-slot-label{font-size:7px;color:rgba(255,255,255,.3);text-align:center;line-height:1;}
+.floater{position:absolute;pointer-events:none;font-family:'Cinzel',serif;font-weight:700;animation:floatUp 1s ease-out forwards;z-index:50;font-size:18px;}
+@keyframes floatUp{from{transform:translateY(0);opacity:1;}to{transform:translateY(-55px);opacity:0;}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;overflow-y:auto;}
+.modal-overlay.hidden{display:none;}
+.modal{background:linear-gradient(135deg,#1a1410,#221a12);border:1px solid var(--gold);padding:22px;max-width:460px;width:100%;box-shadow:0 0 60px rgba(0,0,0,.8);animation:modalIn .25s ease;margin:auto;}
+@keyframes modalIn{from{transform:scale(.92) translateY(18px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+.modal-title{font-family:'Cinzel',serif;font-size:17px;color:var(--gold2);text-align:center;margin-bottom:14px;letter-spacing:3px;}
+.modal-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
+.loot-item-display{text-align:center;padding:14px;margin-bottom:12px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.05);}
+.loot-icon{margin-bottom:6px;}
+.loot-name{font-family:'Cinzel',serif;font-size:15px;margin-bottom:4px;}
+.loot-name.common{color:var(--common);}.loot-name.uncommon{color:var(--uncommon);}.loot-name.rare{color:var(--rare);}.loot-name.legendary{color:var(--legendary);text-shadow:0 0 10px rgba(201,78,201,.5);}
+.loot-name.blankslate{color:var(--blankslate);text-shadow:0 0 14px rgba(232,232,255,.8);animation:bsGlow 1.5s infinite alternate;}
+.loot-stats{font-size:12px;color:var(--bone);opacity:.85;line-height:1.7;}
+.affix-row{font-size:11px;margin:2px 0;padding:3px 6px;border-left:2px solid;}
+.affix-pos{border-color:#4ec94e;color:#7ec97e;background:rgba(78,201,78,.06);}
+.affix-neg{border-color:#e88;color:#e88;background:rgba(232,136,136,.06);}
+.perk-positive{color:#7ec97e;}.perk-negative{color:#e88;}
+.perk-choices{display:flex;flex-direction:column;gap:10px;margin:10px 0;}
+.perk-choice{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);padding:14px;cursor:pointer;transition:all .2s;text-align:left;}
+.perk-choice:hover{border-color:var(--gold);background:rgba(201,168,76,.07);}
+.perk-choice-name{font-family:'Cinzel',serif;font-size:13px;color:var(--gold2);margin-bottom:4px;}
+.perk-choice-desc{font-size:12px;color:var(--bone);opacity:.8;line-height:1.4;}
+.perk-choice-effects{font-size:11px;margin-top:4px;line-height:1.6;}
+.reward-choices{display:flex;flex-direction:column;gap:10px;margin:12px 0;}
+.reward-choice{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);padding:16px;cursor:pointer;transition:all .2s;text-align:center;}
+.reward-choice:hover{border-color:var(--gold);background:rgba(201,168,76,.07);transform:translateY(-2px);}
+.reward-icon{font-size:30px;margin-bottom:6px;}
+.reward-name{font-family:'Cinzel',serif;font-size:13px;color:var(--gold2);margin-bottom:3px;}
+.reward-desc{font-size:12px;color:var(--bone);opacity:.75;}
+#merchant-screen{padding:20px;}#merchant-screen.active{display:block;}
+.merchant-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+.merchant-item{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);padding:10px;text-align:center;cursor:pointer;transition:all .2s;}
+.merchant-item:hover{border-color:var(--gold);background:rgba(201,168,76,.05);}
+.merchant-icon{margin-bottom:4px;}.merchant-name{font-family:'Cinzel',serif;font-size:10px;color:var(--bone2);margin-bottom:3px;}
+.merchant-price{color:var(--gold);font-size:12px;}.merchant-desc{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px;line-height:1.3;}
+.tomb-item-row{display:flex;justify-content:space-between;align-items:center;padding:7px;margin-bottom:5px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);font-size:13px;}
+.death-title{font-family:'Cinzel',serif;font-size:clamp(40px,10vw,80px);color:var(--blood2);text-shadow:0 0 30px rgba(192,57,43,.5);letter-spacing:6px;animation:deathPulse 2s infinite;margin-bottom:10px;}
+@keyframes deathPulse{0%,100%{text-shadow:0 0 30px rgba(192,57,43,.5);}50%{text-shadow:0 0 60px rgba(192,57,43,.8);}}
+.death-subtitle{font-size:18px;font-style:italic;color:var(--bone);opacity:.7;margin-bottom:26px;}
+.death-stats{font-size:16px;color:var(--bone);opacity:.8;margin-bottom:26px;line-height:2;}
+.floor-transition{position:fixed;inset:0;background:#000;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:28px;color:var(--gold);letter-spacing:5px;opacity:0;pointer-events:none;transition:opacity .5s;gap:12px;}
+.floor-transition.show{opacity:1;pointer-events:all;}
+.compare-block{font-size:11px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:8px;line-height:1.5;}
+.compare-up{color:#4ec94e;}.compare-down{color:#e88;}
+.perk-altar-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;margin-bottom:8px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);}
+.perk-altar-row:hover{border-color:rgba(201,168,76,.4);}
+.affix-slot{display:inline-block;font-size:10px;padding:3px 8px;margin:2px;border:1px dashed rgba(255,255,255,.2);color:rgba(255,255,255,.4);}
+.affix-slot.filled{border-style:solid;border-color:rgba(201,168,76,.4);color:var(--bone);}
+.affix-slot.filled.pos{border-color:rgba(78,201,78,.5);color:#7ec97e;}
+.affix-slot.filled.neg{border-color:rgba(232,136,136,.5);color:#e88;}
+.status-badge{display:inline-block;font-size:9px;padding:1px 5px;margin:1px;border-radius:2px;}
+.sb-poison{background:rgba(60,120,60,.5);border:1px solid #4ec94e;color:#7ec97e;}
+.sb-burn{background:rgba(150,60,20,.5);border:1px solid #ff8844;color:#ffaa66;}
+.sb-slow{background:rgba(30,60,120,.5);border:1px solid #4e7ec9;color:#88aaff;}
+.sb-curse{background:rgba(80,20,100,.5);border:1px solid #c94ec9;color:#dd88ff;}
+.sb-drain{background:rgba(120,20,20,.5);border:1px solid #c0392b;color:#ff8888;}
+@media(max-width:600px){.bottom-panels{grid-template-columns:1fr;}.enemies-area{right:6px;width:62%;}.player-char{left:6px;}.merchant-grid{grid-template-columns:repeat(2,1fr);}}

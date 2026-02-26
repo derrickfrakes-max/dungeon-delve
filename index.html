@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dungeon Delve</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="app">
+
+<div id="title-screen" class="screen active">
+  <div class="title-rune">⚔</div>
+  <h1 class="game-title">Dungeon Delve</h1>
+  <p class="subtitle">descend. fight. die. repeat.</p>
+  <p style="font-size:11px;color:rgba(255,255,255,.2);letter-spacing:2px;margin-top:-40px;margin-bottom:40px;">v0.8.1</p>
+  <div id="continue-block" style="display:none;margin-bottom:20px;text-align:center;">
+    <div id="continue-info" style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:10px;letter-spacing:1px;"></div>
+    <button class="btn" style="background:rgba(201,168,76,.15);border-color:var(--gold);" onclick="loadGame()">⚔ Continue</button>
+    <button class="btn danger" style="font-size:11px;margin-left:8px;" onclick="deleteSave()">✕ Delete Save</button>
+  </div>
+  <div class="name-form">
+    <label style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;">Name Your Doomed Hero</label>
+    <input type="text" id="player-name-input" maxlength="20" placeholder="Hero's Name" value="Adventurer">
+    <button class="btn" onclick="startGame()">Descend Into Darkness</button>
+  </div>
+</div>
+
+<div id="graveyard-screen" class="screen">
+  <div class="floor-banner">— B1 · The Graveyard of the Fallen —</div>
+  <div class="graveyard-container" id="graveyard-container">
+    <div class="graveyard-empty" id="graveyard-empty">No fallen heroes yet...</div>
+  </div>
+  <div style="text-align:center;margin-bottom:20px;">
+    <p style="font-style:italic;color:rgba(255,255,255,.4);font-size:13px;margin-bottom:14px;">Click a tombstone to recover items. Buyback costs 2× sell value.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn" onclick="showGraveyardMerchant()">🛒 Wandering Merchant</button>
+      <button class="btn" onclick="enterDungeon()">Descend to B1</button>
+    </div>
+  </div>
+</div>
+
+<div id="game-screen" class="screen">
+  <div class="hud">
+    <div class="hud-section"><span class="hud-label">Floor</span><span class="hud-value" id="hud-floor">B1</span></div>
+    <div class="hud-section" style="flex:1;max-width:220px;">
+      <span class="hud-label">HP — <span id="hud-hp-num">100/100</span></span>
+      <div class="hp-bar"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div>
+    </div>
+    <div class="hud-section"><span class="hud-label">Gold</span><span class="hud-value" id="hud-gold">💰0</span></div>
+    <div class="hud-section"><span class="hud-label">XP</span><span class="hud-value" id="hud-xp">0</span></div>
+    <div class="hud-section"><span class="hud-label">Level</span><span class="hud-value" id="hud-level">1</span></div>
+    <div class="hud-section" id="hud-mana-section" style="display:none;flex:1;max-width:140px;">
+      <span class="hud-label">MANA — <span id="hud-mana-num">30/30</span></span>
+      <div class="hp-bar"><div id="mana-fill" style="height:100%;background:linear-gradient(90deg,#1a3a8a,#3a6acf);transition:width .4s;width:100%;"></div></div>
+    </div>
+  </div>
+
+  <div class="arena" id="arena">
+    <div class="torch torch-left">🔥</div>
+    <div class="torch torch-right">🔥</div>
+    <div class="arena-floor"></div>
+    <div id="initiative-banner"></div>
+    <div class="player-char" id="player-char"></div>
+    <div class="enemies-area" id="enemies-area"></div>
+  </div>
+
+  <div class="combat-log" id="combat-log"></div>
+
+  <div class="action-bar" id="action-bar">
+    <button class="btn" id="btn-attack" onclick="playerAttack()">⚔ Attack</button>
+    <button class="btn" id="btn-magic" onclick="castSpell()" style="display:none;border-color:#3a6acf;color:#88aaff;animation:magicGlow 2s infinite alternate;">✨ Magic</button>
+    <button class="btn" id="btn-item" onclick="useItemFromBattle()">🧪 Item</button>
+    <button class="btn danger" id="btn-flee" onclick="attemptFlee()">🏃 Flee</button>
+  </div>
+
+  <div class="pouch-bar" id="pouch-bar">
+    <span class="pouch-label">⚗ Pouch</span>
+    <div id="pouch-slots" style="display:flex;gap:5px;"></div>
+  </div>
+
+  <div class="bottom-panels">
+    <div class="panel">
+      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Stats &amp; Perks</span>
+        <button onclick="saveGame(true)" style="font-size:9px;padding:2px 7px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:rgba(201,168,76,.6);cursor:pointer;font-family:'Cinzel',serif;letter-spacing:1px;" title="Save game">💾 Save</button>
+      </div>
+      <div class="stat-grid" id="stat-grid"></div>
+      <div id="status-badges" style="margin-top:5px;"></div>
+      <div class="perks-list" id="perks-list"></div>
+      <div id="save-indicator" style="font-size:9px;color:rgba(255,255,255,.2);text-align:right;margin-top:4px;letter-spacing:1px;"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Equipment</span>
+        <span style="display:flex;gap:4px;">
+          <button id="tab-equip" onclick="switchPanel('equip')" style="font-size:9px;padding:3px 8px;background:rgba(201,168,76,.2);border:1px solid var(--gold);color:var(--gold2);cursor:pointer;font-family:'Cinzel',serif;">Equip</button>
+          <button id="tab-pack" onclick="switchPanel('pack')" style="font-size:9px;padding:3px 8px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);cursor:pointer;font-family:'Cinzel',serif;">Pack</button>
+        </span>
+      </div>
+      <div id="panel-equip"><div class="equip-silhouette" id="equip-silhouette"></div></div>
+      <div id="panel-pack" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<div id="merchant-screen" class="screen">
+  <div class="floor-banner">— Wandering Merchant —</div>
+  <p id="merchant-greeting" style="text-align:center;font-style:italic;color:rgba(255,255,255,.5);margin-bottom:2px;">"Ah, a survivor!"</p>
+  <p id="merchant-markup-note" style="text-align:center;font-size:11px;color:rgba(255,150,50,.7);margin-bottom:4px;min-height:14px;"></p>
+  <p style="text-align:center;font-size:14px;color:var(--gold);margin-bottom:4px;">Your gold: <span id="merchant-gold">0</span> 💰</p>
+  <div id="merchant-msg" style="text-align:center;font-size:12px;min-height:18px;margin-bottom:4px;transition:opacity .5s;opacity:0;"></div>
+  <div id="merchant-perk-altar" style="display:none;text-align:center;padding:10px;margin-bottom:8px;background:rgba(80,40,0,.3);border:1px solid rgba(240,192,96,.3);">
+    <div style="font-family:'Cinzel',serif;font-size:12px;color:#f0c060;margin-bottom:6px;">🏛 PERK ALTAR — hanging on the wall</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:8px;">An ancient stone tablet humming with power. Purchase permanent perks.</div>
+    <button class="btn" onclick="showPerkAltarShop()">Browse Perks</button>
+  </div>
+  <div class="merchant-grid" id="merchant-grid"></div>
+  <div style="margin:10px 0 6px;padding:8px 0 4px;border-top:1px solid rgba(255,255,255,.07);">
+    <div style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">💸 Sell Your Wares</div>
+    <div id="merchant-sell-panel"></div>
+  </div>
+  <div style="text-align:center;"><button class="btn" onclick="leaveMerchant()">Enter Next Room</button></div>
+</div>
+
+<div id="death-screen" class="screen">
+  <div class="death-title">YOU DIED</div>
+  <div class="death-subtitle" id="death-subtitle">Slain by the darkness</div>
+  <div class="death-stats" id="death-stats"></div>
+  <button class="btn danger" onclick="respawn()">Return to the Graveyard</button>
+</div>
+</div>
+
+<!-- LOOT MODAL -->
+<div class="modal-overlay hidden" id="loot-modal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title" id="loot-modal-title">💀 Item Dropped</div>
+    <div id="loot-comparison-area" style="display:flex;gap:10px;margin-bottom:10px;"></div>
+    <div id="loot-item-display"></div>
+    <div class="modal-btns" id="loot-modal-btns">
+      <button class="btn" onclick="takeLoot()">Take</button>
+      <button class="btn danger" onclick="closeLootModal()">Leave</button>
+    </div>
+  </div>
+</div>
+
+<!-- PERK CHOICE MODAL -->
+<div class="modal-overlay hidden" id="perk-modal">
+  <div class="modal">
+    <div class="modal-title" id="perk-modal-title">🙏 The Shrine Stirs...</div>
+    <p id="perk-modal-subtitle" style="text-align:center;font-style:italic;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:12px;">Choose one blessing — and accept its cost.</p>
+    <div class="perk-choices" id="perk-choices"></div>
+  </div>
+</div>
+
+<!-- LEVEL UP MODAL -->
+<div class="modal-overlay hidden" id="levelup-modal">
+  <div class="modal">
+    <div class="modal-title" id="levelup-title">⬆ LEVEL UP!</div>
+    <p style="text-align:center;font-style:italic;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:4px;" id="levelup-subtitle">You grow stronger. Invest your point.</p>
+    <div id="levelup-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px;padding:10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);"></div>
+    <div id="levelup-choices" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+</div>
+
+<!-- REWARD MODAL -->
+<div class="modal-overlay hidden" id="reward-modal">
+  <div class="modal">
+    <div class="modal-title">⚔ Room Cleared</div>
+    <div id="reward-hp-display" style="margin-bottom:8px;"></div>
+    <p id="reward-subtitle" style="text-align:center;font-style:italic;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:8px;">The silence settles. Choose your reward.</p>
+    <div class="reward-choices" id="reward-choices"></div>
+    <div id="reward-result" style="display:none;text-align:center;padding:20px 8px;">
+      <div id="reward-result-icon" style="font-size:48px;margin-bottom:12px;"></div>
+      <div id="reward-result-title" style="font-family:'Cinzel',serif;font-size:16px;color:var(--gold2);margin-bottom:8px;"></div>
+      <div id="reward-result-desc" style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:20px;"></div>
+      <button class="btn" onclick="rewardResultContinue()">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- WEAPON SHRINE MODAL -->
+<div class="modal-overlay hidden" id="weapon-shrine-modal">
+  <div class="modal">
+    <div class="modal-title">⚗️ Weapon Shrine</div>
+    <p style="text-align:center;font-style:italic;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:12px;">The ancient forge hums. Place your weapon to reforge its essence.</p>
+    <div id="weapon-shrine-content"></div>
+    <div class="modal-btns" id="weapon-shrine-btns"></div>
+  </div>
+</div>
+
+<!-- PERK ALTAR SHOP -->
+<div class="modal-overlay hidden" id="perk-altar-modal">
+  <div class="modal">
+    <div class="modal-title">🏛 Perk Altar</div>
+    <p style="text-align:center;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:4px;">Gold: <span id="altar-gold-display">0</span> 💰 · Perks purchased: <span id="altar-perks-count">0</span>/5</p>
+    <div id="perk-altar-list" style="margin:12px 0;max-height:380px;overflow-y:auto;"></div>
+    <div class="modal-btns"><button class="btn danger" onclick="closePerkAltar()">Leave</button></div>
+  </div>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="modal-overlay hidden" id="item-modal">
+  <div class="modal">
+    <div class="modal-title" id="item-modal-title">Item</div>
+    <div class="loot-item-display" id="item-modal-display"></div>
+    <div class="compare-block" id="item-modal-compare"></div>
+    <div class="modal-btns" id="item-modal-btns"></div>
+  </div>
+</div>
+
+<!-- TOMB MODAL -->
+<div class="modal-overlay hidden" id="tomb-modal">
+  <div class="modal">
+    <div class="modal-title">⚰ Fallen Hero's Grave</div>
+    <div id="tomb-modal-content"></div>
+    <div class="modal-btns"><button class="btn danger" onclick="closeTombModal()">Leave in Peace</button></div>
+  </div>
+</div>
+
+<!-- ARCANE FONT MODAL -->
+<div class="modal-overlay hidden" id="arcane-font-modal">
+  <div class="modal">
+    <div class="modal-title">🌀 Arcane Font</div>
+    <p style="text-align:center;font-style:italic;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:12px;">A pool of magical energy pulses before you. Drink deep, or press on.</p>
+    <div class="modal-btns">
+      <button class="btn" onclick="acceptArcaneFont()">Restore Full Mana</button>
+      <button class="btn danger" onclick="closeArcaneFont()">Ignore It</button>
+    </div>
+  </div>
+</div>
+
+<!-- GRAVEYARD MERCHANT MODAL -->
+<div class="modal-overlay hidden" id="graveyard-merchant-modal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-title">🛒 Wandering Merchant</div>
+    <p style="text-align:center;font-style:italic;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:6px;">"Supplies for the desperate — fresh stock from topside."</p>
+    <p style="text-align:center;font-size:13px;color:var(--gold);margin-bottom:8px;">Gold: <span id="gm-gold">0</span> 💰</p>
+
+    <!-- Tab buttons -->
+    <div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px;">
+      <button id="gm-tab-buy" class="btn" style="font-size:11px;padding:7px 20px;letter-spacing:2px;" onclick="gmSwitchTab('buy')">🛍 Buy</button>
+      <button id="gm-tab-sell" class="btn" style="font-size:11px;padding:7px 20px;letter-spacing:2px;opacity:.5;" onclick="gmSwitchTab('sell')">💸 Sell</button>
+    </div>
+
+    <div id="gm-msg" style="text-align:center;font-size:11px;min-height:16px;margin-bottom:6px;color:#e88;"></div>
+
+    <!-- BUY panel -->
+    <div id="gm-panel-buy">
+      <div id="gm-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;max-height:380px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- SELL panel -->
+    <div id="gm-panel-sell" style="display:none;">
+      <div style="font-size:11px;color:rgba(255,255,255,.35);text-align:center;font-style:italic;margin-bottom:8px;">Items sell for 40% of their value. Equipped items cannot be sold.</div>
+      <div id="gm-sell-list" style="max-height:380px;overflow-y:auto;"></div>
+    </div>
+
+    <div class="modal-btns"><button class="btn danger" onclick="closeGraveyardMerchant()">Leave</button></div>
+  </div>
+</div>
+
+<!-- PREPARE MODAL -->
+<div class="modal-overlay hidden" id="prepare-modal">
+  <div class="modal">
+    <div class="modal-title">⚔ Prepare for Battle</div>
+    <p style="text-align:center;font-style:italic;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:4px;">Steel yourself before entering B1.</p>
+    <p style="text-align:center;font-size:13px;color:var(--gold);margin-bottom:10px;">Gold: <span id="prepare-gold">0</span> 💰</p>
+    <div id="prepare-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;max-height:280px;overflow-y:auto;"></div>
+    <div class="modal-btns"><button class="btn" onclick="closePrepareModal()">Begin Descent</button></div>
+  </div>
+</div>
+
+<!-- CONSUMABLE PICKER -->
+<div class="modal-overlay hidden" id="consumable-modal">
+  <div class="modal">
+    <div class="modal-title">🧪 Use Item</div>
+    <div id="consumable-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:300px;overflow-y:auto;"></div>
+    <div class="modal-btns"><button class="btn danger" onclick="closeConsumableModal()">Cancel</button></div>
+  </div>
+</div>
+
+<div class="floor-transition" id="floor-transition"></div>
+
+
+<!-- Game scripts -->
+<script src="js/data.js"></script>
+<script src="js/player.js"></script>
+<script src="js/items.js"></script>
+<script src="js/enemies.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/floors.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
