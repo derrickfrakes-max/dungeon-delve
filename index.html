@@ -29,9 +29,15 @@
 
 <div id="graveyard-screen" class="screen">
   <div class="floor-banner">— B1 · The Graveyard of the Fallen —</div>
-  <div class="graveyard-container" id="graveyard-container">
-    <div class="graveyard-empty" id="graveyard-empty">No fallen heroes yet...</div>
+
+  <!-- Atmospheric scene panel (background image, no tombstones) -->
+  <div class="graveyard-scene" id="graveyard-scene">
+    <div class="graveyard-scene-empty" id="graveyard-scene-empty">No fallen heroes yet...</div>
   </div>
+
+  <!-- Dedicated tombstone row -->
+  <div class="tombstone-row" id="tombstone-row"></div>
+
   <div style="text-align:center;margin-bottom:20px;">
     <p style="font-style:italic;color:rgba(255,255,255,.4);font-size:13px;margin-bottom:14px;">Click a tombstone to recover items. Buyback costs 2× sell value.</p>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">

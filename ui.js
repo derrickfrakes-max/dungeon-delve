@@ -729,17 +729,22 @@ function renderShopGrid(grid,items,goldId){
 
 function showGraveyard(){showScreen('graveyard-screen');renderGraveyard();}
 function renderGraveyard(){
-  const c=document.getElementById('graveyard-container');
-  const empty=document.getElementById('graveyard-empty');
-  c.innerHTML='';if(empty) c.appendChild(empty);
-  if(!gameState.graves.length){if(empty)empty.style.display='block';return;}
-  if(empty) empty.style.display='none';
+  const row=document.getElementById('tombstone-row');
+  const sceneEmpty=document.getElementById('graveyard-scene-empty');
+  row.innerHTML='';
+  if(!gameState.graves.length){
+    if(sceneEmpty) sceneEmpty.style.display='block';
+    row.style.display='none';
+    return;
+  }
+  if(sceneEmpty) sceneEmpty.style.display='none';
+  row.style.display='flex';
   gameState.graves.forEach((g,idx)=>{
     const stone=document.createElement('div');stone.className='tombstone purchasable';
     const hasItems=Object.values(g.equipped).some(v=>v!==null);
     if(hasItems){const b=document.createElement('div');b.className='tomb-badge';b.textContent='LOOT';stone.appendChild(b);}
     stone.innerHTML+=`${renderTombSVG(g)}<div class="tomb-name">${g.name}</div><div class="tomb-depth">B${g.floor} — ${g.killedBy}</div>`;
-    stone.onclick=()=>showTombModal(g,idx);c.appendChild(stone);
+    stone.onclick=()=>showTombModal(g,idx);row.appendChild(stone);
   });
 }
 function renderTombSVG(g){
